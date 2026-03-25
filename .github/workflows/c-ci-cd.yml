@@ -41,7 +41,7 @@ jobs:
       - name: 5. Run container test
         shell: powershell
         run: |
-          docker rm -f c-test-container 2>$null
+          docker rm -f c-test-container || $true
           docker run --name c-test-container $env:IMAGE_NAME:latest > output.txt
           Get-Content output.txt
           Select-String -Path output.txt -Pattern "sum = 30"
