@@ -12,7 +12,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/c-docker-ghcr-runner
+  IMAGE_NAME: ghcr.io/jhmins/c-docker-ghcr-runner
 
 jobs:
   build-test-push-deploy:
