@@ -1,7 +1,10 @@
 FROM ubuntu:24.04
 
 RUN apt-get update && \
-    apt-get install -y gcc make libc6 && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    gcc \
+    make \
+    libc6-dev && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
