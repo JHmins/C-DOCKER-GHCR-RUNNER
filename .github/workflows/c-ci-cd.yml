@@ -12,7 +12,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/jhmins/c-docker-ghcr-runner
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/c-docker-ghcr-runner
 
 jobs:
   build-test-push-deploy:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 2. Show Docker version
-        shell: powershell
+        shell: cmd
         run: docker version
 
       - name: 3. Log in to GHCR
@@ -34,32 +34,33 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 4. Build Docker image
-        shell: powershell
+        shell: pwsh
         run: |
           docker build -t "${env:IMAGE_NAME}:latest" .
 
       - name: 5. Run container test
-        shell: powershell
+        shell: pwsh
         run: |
-          docker rm -f c-test-container || $true
-          docker run --name c-test-container $env:IMAGE_NAME:latest > output.txt
+          docker rm -f c-test-container 2>$null
+          docker run --name c-test-container "${env:IMAGE_NAME}:latest" > output.txt
           Get-Content output.txt
           Select-String -Path output.txt -Pattern "sum = 30"
           docker rm -f c-test-container
 
       - name: 6. Push image to GHCR
-        shell: powershell
+        shell: pwsh
         run: |
-          docker push $env:IMAGE_NAME:latest
+          docker push "${env:IMAGE_NAME}:latest"
 
-      - name: 7. Deploy with Docker Compose
-        shell: powershell
+      - name: 7. Deploy container
+        shell: pwsh
         run: |
-          docker compose down
-          docker compose pull
-          docker compose up -d
+          docker rm -f c-prod-container 2>$null
+          docker pull "${env:IMAGE_NAME}:latest"
+          docker run -d --name c-prod-container "${env:IMAGE_NAME}:latest"
 
       - name: 8. Verify running container
-        shell: powershell
+        shell: cmd
         run: docker ps
+        
 
