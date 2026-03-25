@@ -36,7 +36,7 @@ jobs:
       - name: 4. Build Docker image
         shell: powershell
         run: |
-          run: docker build -t "${env:IMAGE_NAME}:latest" .
+          docker build -t "${env:IMAGE_NAME}:latest" .
 
       - name: 5. Run container test
         shell: powershell
